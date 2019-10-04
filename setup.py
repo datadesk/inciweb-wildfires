@@ -8,15 +8,24 @@ def read(fname):
 
 
 setup(
-    name='<your-pypi-package-name>',
+    name='inciweb-wildfires',
     version='0.0.1',
-    description="<your-repo-description>",
+    description="gather data from inciweb on active fires",
     long_description=read('README.rst'),
     author='Los Angeles Times Data Desk',
     author_email='datadesk@latimes.com',
-    url='http://www.github.com/datadesk/<your-repo-slug>',
+    url='http://www.github.com/datadesk/inciweb-wildfires',
     license="MIT",
-    packages=("<your-python-module-name>",),
+    packages=("inciweb_wildfires",),
+    install_requires=[
+        "requests",
+        "geojson",
+        "click",
+    ],
+    entry_points="""
+        [console_scripts]
+        inciwebwildfires=inciweb_wildfires.cli:cmd
+    """,
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Programming Language :: Python',
@@ -26,7 +35,7 @@ setup(
     ],
     project_urls={
         'Maintainer': 'https://github.com/datadesk',
-        'Source': 'https://github.com/datadesk/<your-repo-slug>',
-        'Tracker': 'https://github.com/datadesk/<your-repo-slug>/issues'
+        'Source': 'https://github.com/datadesk/inciweb-wildfires',
+        'Tracker': 'https://github.com/datadesk/inciweb-wildfires/issues'
     },
 )
