@@ -13,5 +13,6 @@ def get_fires():
     r = requests.get(url)
     content = r.json()['markers']
 
-    collection = FeatureCollection([Feature(geometry={'type': 'Point', 'coordinates': [float(d['lng']), float(d['lat'])]}, inciweb_id=d['id'], properties=d) for d in content])
+    collection = FeatureCollection([Feature(geometry={'type': 'Point', 'coordinates': [float(d['lng']), float(d['lat'])]}, fireName=d['name'].split(' Fire')[0], inciweb_id=d['id'], properties=d) for d in content])
+    print(collection)
     return collection
