@@ -10,7 +10,7 @@ def read(fname):
 setup(
     name='inciweb-wildfires',
     version='0.0.1',
-    description="gather data from inciweb on active fires",
+    description="Gather data from inciweb on active fires",
     long_description=read('README.rst'),
     author='Los Angeles Times Data Desk',
     author_email='datadesk@latimes.com',
