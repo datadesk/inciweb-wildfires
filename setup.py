@@ -9,9 +9,10 @@ def read(fname):
 
 setup(
     name='inciweb-wildfires',
-    version='0.0.2',
-    description="Gather data from inciweb on active fires",
-    long_description=read('README.rst'),
+    version='0.0.3',
+    description="Download wildfire incidents data from InciWeb",
+    long_description=read('README.md'),
+    long_description_content_type='text/markdown',
     author='Los Angeles Times Data Desk',
     author_email='datagraphics@caltimes.com',
     url='http://www.github.com/palewire/inciweb-wildfires',
