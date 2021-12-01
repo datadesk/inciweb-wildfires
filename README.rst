@@ -26,12 +26,12 @@ Command-line usage
       --help  Show this message and exit.
 
     Commands:
-      fires  Download active fire incidents from InciWeb
+      incidents  Download active fire incidents from InciWeb
 
 
 Download active fire incidents from inciweb. ::
 
-    $ inciwebwildfires fires
+    $ inciwebwildfires incidents
 
 
 Python usage

@@ -13,7 +13,7 @@ def cmd():
 
 
 @cmd.command(help="Download active fire incidents from InciWeb")
-def fires():
+def incidents():
     click.echo(get_fires())
 
 
