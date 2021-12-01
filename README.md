@@ -38,10 +38,10 @@ Import the library.
 >>> import inciweb_wildfires
 ```
 
-Download a GeoJSON of active fire incidents from inciweb. Returns GeoJSON.
+Download a GeoJSON of active fire incidents.
 
 ```python
->>> data = inciweb_wildfires.get_fires()
+>>> data = inciweb_wildfires.get_incidents()
 ```
 
 ## Contributing
