@@ -5,13 +5,14 @@ from inciweb_wildfires import get_fires
 @click.group()
 def cmd():
     """
-    A command-line interface for downloading wildfire data from inciweb.
+    A command-line interface for downloading wildfire incidents data from InciWeb.
+
     Returns GeoJSON.
     """
     pass
 
 
-@cmd.command(help="Get active fire data from inciweb")
+@cmd.command(help="Download active fire incidents from InciWeb")
 def fires():
     click.echo(get_fires())
 

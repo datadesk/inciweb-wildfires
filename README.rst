@@ -1,7 +1,7 @@
 inciweb-wildfires
 =================
 
-Download wildfire data from `InciWeb <https://inciweb.nwcg.gov/>`_.
+Download wildfire incidents data from `InciWeb <https://inciweb.nwcg.gov/>`_.
 
 Installation
 ------------
@@ -18,7 +18,7 @@ Command-line usage
 
     Usage: inciwebwildfires [OPTIONS] COMMAND [ARGS]...
 
-      A command-line interface for downloading wildfire data from InciWeb.
+      A command-line interface for downloading wildfire incidents data from InciWeb.
 
       Returns GeoJSON.
 
@@ -26,10 +26,10 @@ Command-line usage
       --help  Show this message and exit.
 
     Commands:
-      fires  Download latest active fire data from inciweb
+      fires  Download active fire incidents from InciWeb
 
 
-Download latest active fire perimeter data from inciweb. ::
+Download active fire incidents from inciweb. ::
 
     $ inciwebwildfires fires
 
@@ -41,7 +41,7 @@ Import the library. ::
 
     >>> import inciweb_wildfires
 
-Download a GeoJSON of active fire perimeters from inciweb. Returns GeoJSON. ::
+Download a GeoJSON of active fire incidents from inciweb. Returns GeoJSON. ::
 
     >>> data = inciweb_wildfires.get_fires()
 
