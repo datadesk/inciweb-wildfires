@@ -2,7 +2,7 @@ import requests
 from geojson import Feature, FeatureCollection, Point
 
 
-def get_inicidents():
+def get_incidents():
     """
     Get active incidents data from InciWeb.
 
