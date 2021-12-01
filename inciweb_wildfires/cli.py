@@ -1,5 +1,5 @@
 import click
-from inciweb_wildfires import get_inicidents
+from inciweb_wildfires import get_incidents
 
 
 @click.group()
