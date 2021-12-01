@@ -2,9 +2,11 @@ import requests
 from geojson import Feature, FeatureCollection, Point
 
 
-def get_fires():
+def get_inicidents():
     """
-    Get inciweb data for fires
+    Get active incidents data from InciWeb.
+
+    Returns GeoJson FeatureCollection.
     """
     # Get the data
     url = 'https://inciweb.nwcg.gov/feeds/json/esri/'
