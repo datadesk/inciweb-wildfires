@@ -14,7 +14,7 @@ def cmd():
 
 @cmd.command(help="Download active fire incidents from InciWeb")
 def incidents():
-    click.echo(get_inicidents())
+    click.echo(get_incidents())
 
 
 if __name__ == '__main__':
