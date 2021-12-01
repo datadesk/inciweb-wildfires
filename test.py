@@ -1,13 +1,13 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 import unittest
-from inciweb_wildfires import get_inicidents
+from inciweb_wildfires import get_incidents
 
 
 class InciwebWildfiresUnitTest(unittest.TestCase):
 
     def test_inciweb(self):
-        get_inicidents()
+        get_incidents()
 
 
 if __name__ == '__main__':
