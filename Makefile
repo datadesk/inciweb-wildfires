@@ -8,6 +8,8 @@ test:
 	pipenv run coverage run test.py
 	pipenv run coverage report -m
 
+scrape:
+	pipenv run inciwebwildfires incidents > data/incidents.json
 
 ship:
 	rm -rf build/
