@@ -1,7 +1,7 @@
 inciweb-wildfires
 =================
 
-Download wildfire data from inciweb
+Download wildfire data from `InciWeb <https://inciweb.nwcg.gov/>`_.
 
 Installation
 ------------
@@ -18,7 +18,7 @@ Command-line usage
 
     Usage: inciwebwildfires [OPTIONS] COMMAND [ARGS]...
 
-      A command-line interface for downloading wildfire data from inciweb.
+      A command-line interface for downloading wildfire data from InciWeb.
 
       Returns GeoJSON.
 
