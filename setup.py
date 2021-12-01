@@ -9,7 +9,7 @@ def read(fname):
 
 setup(
     name='inciweb-wildfires',
-    version='0.0.3',
+    version='0.0.4',
     description="Download wildfire incidents data from InciWeb",
     long_description=read('README.md'),
     long_description_content_type='text/markdown',
