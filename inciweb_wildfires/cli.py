@@ -1,5 +1,5 @@
 import click
-from inciweb_wildfires import get_fires
+from inciweb_wildfires import get_inicidents
 
 
 @click.group()
@@ -14,7 +14,7 @@ def cmd():
 
 @cmd.command(help="Download active fire incidents from InciWeb")
 def incidents():
-    click.echo(get_fires())
+    click.echo(get_inicidents())
 
 
 if __name__ == '__main__':
