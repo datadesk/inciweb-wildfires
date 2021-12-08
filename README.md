@@ -58,7 +58,7 @@ Run tests.
 make test
 ```
 
-Shipping new version to PyPI. ::
+Shipping new version to PyPI.
 
 ```sh
 make ship
