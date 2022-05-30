@@ -1,5 +1,3 @@
-#! /usr/bin/env python
-# -*- coding: utf-8 -*-
 import unittest
 from inciweb_wildfires import get_incidents
 
