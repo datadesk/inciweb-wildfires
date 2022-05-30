@@ -6,7 +6,8 @@ verify_ssl = true
 [dev-packages]
 twine = "*"
 flake8 = "*"
-coverage = "*"
+setuptools-scm = "*"
+sphinx = "*"
 
 [packages]
 geojson = "*"
@@ -14,4 +15,4 @@ click = "*"
 requests = "*"
 
 [requires]
-python_version = "3.8"
+python_version = "3.9"
