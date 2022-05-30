@@ -9,16 +9,14 @@ def get_incidents():
     Returns GeoJson FeatureCollection.
     """
     # Get the data
-    url = 'https://inciweb.nwcg.gov/feeds/json/esri/'
+    url = "https://inciweb.nwcg.gov/feeds/json/esri/"
     r = requests.get(url)
-    content = r.json()['markers']
+    content = r.json()["markers"]
 
     # Convert to GeoJSON features
     feature_list = []
     for d in content:
-        p = Point(
-            map(float, (d['lng'], d['lat']))
-        )
+        p = Point(map(float, (d["lng"], d["lat"])))
         f = Feature(geometry=p, properties=d)
         feature_list.append(f)
 

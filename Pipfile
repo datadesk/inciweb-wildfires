@@ -8,6 +8,7 @@ twine = "*"
 flake8 = "*"
 setuptools-scm = "*"
 sphinx = "*"
+pre-commit = "*"
 
 [packages]
 geojson = "*"

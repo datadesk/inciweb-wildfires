@@ -1,4 +1,5 @@
 import click
+
 from inciweb_wildfires import get_incidents
 
 
@@ -17,5 +18,5 @@ def incidents():
     click.echo(get_incidents())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     cmd()
