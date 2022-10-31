@@ -11,6 +11,7 @@ def get_incidents():
     # Get the data
     url = "https://inciweb.nwcg.gov/feeds/json/esri/"
     r = requests.get(url)
+    assert r.ok
     content = r.json()["markers"]
 
     # Convert to GeoJSON features
