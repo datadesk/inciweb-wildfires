@@ -53,6 +53,8 @@ setup(
         "requests",
         "geojson",
         "click",
+        "bs4",
+        "lxml"
     ],
     entry_points="""
         [console_scripts]

@@ -1,4 +1,5 @@
 import requests
+from bs4 import BeautifulSoup
 from geojson import Feature, FeatureCollection, Point
 
 
@@ -8,18 +9,26 @@ def get_incidents():
 
     Returns GeoJson FeatureCollection.
     """
-    # Get the data
-    url = "https://inciweb.nwcg.gov/feeds/json/esri/"
+    url = "https://inciweb.nwcg.gov/feeds/maps/placemarks.kml"
     r = requests.get(url)
-    assert r.ok
-    content = r.json()["markers"]
-
-    # Convert to GeoJSON features
+    soup = BeautifulSoup(r.content, 'xml')
+    folder_list = soup.find_all("Folder")
     feature_list = []
-    for d in content:
-        p = Point(map(float, (d["lng"], d["lat"])))
+    for folder in folder_list:
+        d = dict(
+            name=folder.find("name").text,
+            url=folder.find("Placemark").a['href']
+        )
+        coords = folder.find("Point").find('coordinates').text.split(",")
+        p = Point(map(safe_float, coords))
         f = Feature(geometry=p, properties=d)
         feature_list.append(f)
 
-    # Return the GeoJSON feature collection
     return FeatureCollection(feature_list)
+
+
+def _safe_float(v):
+    v = v.strip()
+    # Fix the weird points that end with an extra "."
+    v = ".".join(v.split(".")[:2])
+    return float(v)
