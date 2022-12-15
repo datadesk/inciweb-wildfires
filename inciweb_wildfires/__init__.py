@@ -21,19 +21,16 @@ def get_incidents():
     feature_list = []
     for folder in folder_list:
         # Pull out the properties
-        d = dict(
-            name=folder.find("name").text,
-            url=folder.find("Placemark").a["href"]
-        )
-        
+        d = dict(name=folder.find("name").text, url=folder.find("Placemark").a["href"])
+
         # Grab the coordinates
         coords = folder.find("Point").find("coordinates").text.split(",")
-        
+
         # Reformat as GeoJSON
         p = Point(map(_safe_float, coords))
         f = Feature(geometry=p, properties=d)
         feature_list.append(f)
-    
+
     # Pass it out
     return FeatureCollection(feature_list)
 
