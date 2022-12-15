@@ -11,15 +11,12 @@ def get_incidents():
     """
     url = "https://inciweb.nwcg.gov/feeds/maps/placemarks.kml"
     r = requests.get(url)
-    soup = BeautifulSoup(r.content, 'xml')
+    soup = BeautifulSoup(r.content, "xml")
     folder_list = soup.find_all("Folder")
     feature_list = []
     for folder in folder_list:
-        d = dict(
-            name=folder.find("name").text,
-            url=folder.find("Placemark").a['href']
-        )
-        coords = folder.find("Point").find('coordinates').text.split(",")
+        d = dict(name=folder.find("name").text, url=folder.find("Placemark").a["href"])
+        coords = folder.find("Point").find("coordinates").text.split(",")
         p = Point(map(_safe_float, coords))
         f = Feature(geometry=p, properties=d)
         feature_list.append(f)
