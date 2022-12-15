@@ -21,20 +21,17 @@ jobs:
           python-version: '3.9'
           cache: 'pipenv'
 
-      - id: make
-        name: Run scrape command
+      - name: Run scrape command
         run: |
           pipenv run python setup.py install
           pipenv run inciweb-wildfires incidents > data/incidents.json
         shell: bash
 
-      - id: make
-        name: Datestamp
+      - name: Datestamp
         run: date > data/timestamp.txt
         shell: bash
 
-      - id: commit
-        name: Commit results
+      - name: Commit results
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "actions@github.com"
