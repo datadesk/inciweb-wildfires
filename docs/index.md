@@ -19,7 +19,7 @@ pipenv install inciweb-wildfires
 ## Command-line usage
 
 ```sh
-Usage: inciwebwildfires [OPTIONS] COMMAND [ARGS]...
+Usage: inciweb-wildfires [OPTIONS] COMMAND [ARGS]...
 
   A command-line interface for downloading wildfire incidents data from InciWeb.
 
