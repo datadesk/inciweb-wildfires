@@ -29,6 +29,8 @@ def get_incidents():
         # Reformat as GeoJSON
         p = Point(map(_safe_float, coords))
         f = Feature(geometry=p, properties=d)
+
+        # Add it to the list
         feature_list.append(f)
 
     # Pass it out
