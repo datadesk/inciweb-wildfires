@@ -20,7 +20,6 @@ def get_incidents():
         p = Point(map(_safe_float, coords))
         f = Feature(geometry=p, properties=d)
         feature_list.append(f)
-
     return FeatureCollection(feature_list)
 
 
