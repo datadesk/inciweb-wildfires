@@ -25,9 +25,12 @@ jobs:
         name: Run scrape command
         run: |
           pipenv run python setup.py install
-          pipenv run inciwebwildfires incidents > data/incidents.json
-        env:
-          AIRNOW_KEYS: ${{ secrets.AIRNOW_KEYS }}
+          pipenv run inciweb-wildfires incidents > data/incidents.json
+        shell: bash
+
+      - id: make
+        name: Datestamp
+        run: date > data/timestamp.txt
         shell: bash
 
       - id: commit
@@ -38,6 +41,6 @@ jobs:
           git config pull.rebase false
           git status
           git pull origin $GITHUB_REF
-          git add ./
+          git add ./data
           git commit -m "Scrape" && git push || true
         shell: bash

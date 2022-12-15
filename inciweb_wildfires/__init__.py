@@ -20,7 +20,7 @@ def get_incidents():
             url=folder.find("Placemark").a['href']
         )
         coords = folder.find("Point").find('coordinates').text.split(",")
-        p = Point(map(safe_float, coords))
+        p = Point(map(_safe_float, coords))
         f = Feature(geometry=p, properties=d)
         feature_list.append(f)
 

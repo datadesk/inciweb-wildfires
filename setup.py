@@ -59,6 +59,7 @@ setup(
     entry_points="""
         [console_scripts]
         inciwebwildfires=inciweb_wildfires.cli:cmd
+        inciweb-wildfires=inciweb_wildfires.cli:cmd
     """,
     use_scm_version={"version_scheme": version_scheme, "local_scheme": local_version},
     classifiers=[
