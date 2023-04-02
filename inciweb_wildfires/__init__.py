@@ -27,7 +27,13 @@ def get_incidents():
         coords = folder.find("Point").find("coordinates").text.split(",")
 
         # Reformat as GeoJSON
-        p = Point(map(_safe_float, coords))
+        try:
+            p = Point(map(_safe_float, coords))
+        except Exception:
+            # If the point cannot be converted, skip it.
+            # Inciweb does sometimes ship malformed data
+            print(f"Point {coords} could not be parsed. Skipping this feature.")
+            continue
         f = Feature(geometry=p, properties=d)
 
         # Add it to the list
