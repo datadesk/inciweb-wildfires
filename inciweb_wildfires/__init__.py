@@ -39,7 +39,11 @@ def get_incidents():
 
 def _safe_float(v):
     """Handle the flawed coordinates published by InciWeb."""
+    # Strip the front and back
     v = v.strip()
     # Fix the weird points that end with an extra "."
     v = ".".join(v.split(".")[:2])
+    # Delete any empty spaces
+    v = v.replace(" ", "")
+    # Cast to float
     return float(v)
