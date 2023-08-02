@@ -54,7 +54,7 @@ jobs:
 
       - id: mypy
         name: Run mypy
-        run: pipenv run mypy ./nasa_wildfires --ignore-missing-imports --verbose
+        run: pipenv run mypy ./inciweb_wildfires --ignore-missing-imports --verbose
         shell: bash
 
   test-python:
