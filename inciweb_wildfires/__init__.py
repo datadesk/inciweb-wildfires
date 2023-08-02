@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 from geojson import Feature, FeatureCollection, Point
 
 
-def get_incidents():
+def get_incidents() -> FeatureCollection:
     """
     Get active incidents data from InciWeb.
 
@@ -13,8 +13,11 @@ def get_incidents():
     url = "https://inciweb.nwcg.gov/feeds/maps/placemarks.kml"
     r = requests.get(url)
 
-    # Verify that the response is good to go
-    assert r.ok
+    # Make sure it came back kosher
+    try:
+        assert r.ok
+    except AssertionError:
+        raise AssertionError(f"Request failed with status code {r.status_code}")
 
     # Parse the KML
     soup = BeautifulSoup(r.content, "xml")
@@ -46,7 +49,7 @@ def get_incidents():
     return FeatureCollection(feature_list)
 
 
-def _safe_float(v):
+def _safe_float(v: str) -> float:
     """Handle the flawed coordinates published by InciWeb."""
     # Strip the front and back
     v = v.strip()
