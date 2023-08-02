@@ -13,6 +13,9 @@ def get_incidents():
     url = "https://inciweb.nwcg.gov/feeds/maps/placemarks.kml"
     r = requests.get(url)
 
+    # Verify that the response is good to go
+    assert r.ok
+
     # Parse the KML
     soup = BeautifulSoup(r.content, "xml")
     folder_list = soup.find_all("Folder")
