@@ -46,7 +46,7 @@ def get_incidents() -> FeatureCollection:
 def convert_coords(deg: str, min: str, sec: str) -> float:
     """Handle the flawed coordinates published by InciWeb."""
     if not min.strip():
-        min = 0
+        min = '0'
     if not sec.strip():
-        sec = 0
+        sec = '0'
     return float(deg) + (float(min) / 60) + (float(sec) / 3600)
