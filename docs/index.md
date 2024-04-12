@@ -1,6 +1,3 @@
-```{include} _templates/nav.html
-```
-
 # inciweb-wildfires
 
 Download wildfire incidents data from [InciWeb](https://inciweb.nwcg.gov/).
