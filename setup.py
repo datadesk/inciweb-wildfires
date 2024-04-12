@@ -49,7 +49,7 @@ setup(
     url="http://www.github.com/datadesk/inciweb-wildfires",
     license="MIT",
     packages=("inciweb_wildfires",),
-    install_requires=["requests", "geojson", "click", "bs4", "lxml"],
+    install_requires=["requests", "geojson", "click"],
     entry_points="""
         [console_scripts]
         inciwebwildfires=inciweb_wildfires.cli:cmd

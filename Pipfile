@@ -16,8 +16,6 @@ types-requests = "*"
 geojson = "*"
 click = "*"
 requests = "*"
-bs4 = "*"
-lxml = "*"
 
 [requires]
 python_version = "3.10"
