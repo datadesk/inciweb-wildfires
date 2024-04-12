@@ -12,6 +12,7 @@ pre-commit = "*"
 mypy = "*"
 types-requests = "*"
 sphinx-palewire-theme = "*"
+myst-parser = "*"
 
 [packages]
 geojson = "*"
