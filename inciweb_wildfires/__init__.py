@@ -28,8 +28,8 @@ def get_incidents() -> FeatureCollection:
     # Loop through all the placemarks
     feature_list = []
     for d in data:
-        # Do not include "Prescribed Fire" types
-        if (d['type'] != 'Prescribed Fire'):
+        # Only include "Wildfire" types
+        if (d['type'] == 'Wildfire'):
             # Reformat as GeoJSON
             x = convert_coords(d["long_deg"], d["long_min"], d["long_sec"])
             y = convert_coords(d["lat_deg"], d["lat_min"], d["lat_sec"])
