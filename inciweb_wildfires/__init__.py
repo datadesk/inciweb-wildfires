@@ -30,9 +30,8 @@ def get_data(t) -> FeatureCollection:
     # Loop through all the placemarks
     feature_list = []
     for d in data:
-        print(d['type'], '/ type is ' + t, '/', d['type'] == str(t))
         # Only type specified
-        if [d['type'] == str(t)]:
+        if d['type'] == t:
             # Reformat as GeoJSON
             x = convert_coords(d["long_deg"], d["long_min"], d["long_sec"])
             y = convert_coords(d["lat_deg"], d["lat_min"], d["lat_sec"])
@@ -40,10 +39,10 @@ def get_data(t) -> FeatureCollection:
                 x = -x
             p = Point((x, y))
             f = Feature(geometry=p, properties=d)
-            print('yes to:', d['type'])
             # Add it to the list
             feature_list.append(f)
-    # print(feature_list)
+        else:
+            continue
     # Pass it out
     return FeatureCollection(feature_list)
 
