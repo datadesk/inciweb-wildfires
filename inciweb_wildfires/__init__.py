@@ -5,6 +5,7 @@ from __future__ import annotations
 import requests
 from geojson import Feature, FeatureCollection, Point
 
+
 def get_data(t) -> FeatureCollection:
     """
     Get all incidents data from InciWeb.
@@ -45,8 +46,6 @@ def get_data(t) -> FeatureCollection:
             continue
     # Pass it out
     return FeatureCollection(feature_list)
-
-    
 
 
 def get_incidents() -> FeatureCollection:
