@@ -1,6 +1,6 @@
 import unittest
 
-from inciweb_wildfires import get_incidents
+from inciweb_wildfires import get_incidents, get_prescribed_fires
 
 
 class InciwebWildfiresUnitTest(unittest.TestCase):
