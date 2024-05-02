@@ -51,7 +51,6 @@ def get_data(t) -> FeatureCollection:
 def get_incidents() -> FeatureCollection:
     """
     Get all active wildfire incidents from InciWeb.
-    
     Returns GeoJson FeatureCollection.
     """
     features = get_data("Wildfire")
@@ -59,10 +58,10 @@ def get_incidents() -> FeatureCollection:
     # Pass it out
     return features
 
+
 def get_prescribed_fires() -> FeatureCollection:
     """
     Get all active prescribed fire incidents from InciWeb.
-    
     Returns GeoJson FeatureCollection.
     """
     features = get_data("Prescribed Fire")
