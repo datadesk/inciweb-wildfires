@@ -17,6 +17,10 @@ def cmd():
 def incidents():
     click.echo(get_incidents())
 
+@cmd.command(help="Download prescribed fire incidents from InciWeb")
+def prescribed_fires():
+    click.echo(get_prescribed_fires())
+
 
 if __name__ == "__main__":
     cmd()
