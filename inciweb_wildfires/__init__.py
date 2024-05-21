@@ -6,9 +6,12 @@ import requests
 from geojson import Feature, FeatureCollection, Point
 
 
-def get_incidents() -> FeatureCollection:
+def get_data(t) -> FeatureCollection:
     """
-    Get active incidents data from InciWeb.
+    Get all incidents data from InciWeb.
+
+    Passes in 't' parameter used to specify type of data (Wildfire, Prescribed Fire)
+    Incident Types
 
     Returns GeoJson FeatureCollection.
     """
@@ -28,19 +31,43 @@ def get_incidents() -> FeatureCollection:
     # Loop through all the placemarks
     feature_list = []
     for d in data:
-        # Reformat as GeoJSON
-        x = convert_coords(d["long_deg"], d["long_min"], d["long_sec"])
-        y = convert_coords(d["lat_deg"], d["lat_min"], d["lat_sec"])
-        if x > 0:
-            x = -x
-        p = Point((x, y))
-        f = Feature(geometry=p, properties=d)
-
-        # Add it to the list
-        feature_list.append(f)
-
+        # Only type specified
+        if d['type'] == t:
+            # Reformat as GeoJSON
+            x = convert_coords(d["long_deg"], d["long_min"], d["long_sec"])
+            y = convert_coords(d["lat_deg"], d["lat_min"], d["lat_sec"])
+            if x > 0:
+                x = -x
+            p = Point((x, y))
+            f = Feature(geometry=p, properties=d)
+            # Add it to the list
+            feature_list.append(f)
+        else:
+            continue
     # Pass it out
     return FeatureCollection(feature_list)
+
+
+def get_incidents() -> FeatureCollection:
+    """
+    Get all active wildfire incidents from InciWeb.
+    Returns GeoJson FeatureCollection.
+    """
+    features = get_data("Wildfire")
+
+    # Pass it out
+    return features
+
+
+def get_prescribed_fires() -> FeatureCollection:
+    """
+    Get all active prescribed fire incidents from InciWeb.
+    Returns GeoJson FeatureCollection.
+    """
+    features = get_data("Prescribed Fire")
+
+    # Pass it out
+    return features
 
 
 def convert_coords(deg: str, min: str, sec: str) -> float:
