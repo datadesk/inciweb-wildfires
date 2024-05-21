@@ -35,6 +35,12 @@ Download active fire incidents from inciweb.
 inciwebwildfires incidents
 ```
 
+Download prescribed fire incidents from inciweb.
+```sh
+inciwebwildfires prescribed_fires
+```
+
+
 ## Python usage
 
 Import the library.
