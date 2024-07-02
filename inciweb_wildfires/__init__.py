@@ -72,6 +72,8 @@ def get_prescribed_fires() -> FeatureCollection:
 
 def convert_coords(deg: str, min: str, sec: str) -> float:
     """Handle the flawed coordinates published by InciWeb."""
+    # if there's a degree symbol, remove it
+    deg = deg.replace('º', '')
     if not min.strip():
         min = '0'
     if not sec.strip():
