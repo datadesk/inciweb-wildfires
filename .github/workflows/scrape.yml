@@ -24,7 +24,7 @@ jobs:
 
       - name: Run scrape command
         run: |
-          pipenv run python setup.py install
+          pipenv install
           pipenv run inciweb-wildfires incidents > data/incidents.json
         shell: bash
 
