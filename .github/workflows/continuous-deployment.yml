@@ -71,7 +71,7 @@ jobs:
         run: uv python install 3.10
 
       - name: Install Python dependencies
-        run: uv sync --python 3.10 --extras deploy
+        run: uv sync --extras deploy
 
       - id: build
         name: Build release
