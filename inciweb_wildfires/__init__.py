@@ -32,7 +32,7 @@ def get_data(t) -> FeatureCollection:
     feature_list = []
     for d in data:
         # Only type specified
-        if d['type'] == t:
+        if d["type"] == t:
             # Reformat as GeoJSON
             x = convert_coords(d["long_deg"], d["long_min"], d["long_sec"])
             y = convert_coords(d["lat_deg"], d["lat_min"], d["lat_sec"])
@@ -73,9 +73,9 @@ def get_prescribed_fires() -> FeatureCollection:
 def convert_coords(deg: str, min: str, sec: str) -> float:
     """Handle the flawed coordinates published by InciWeb."""
     # if there's a degree symbol, remove it
-    deg = deg.replace('º', '')
+    deg = deg.replace("º", "")
     if not min.strip():
-        min = '0'
+        min = "0"
     if not sec.strip():
-        sec = '0'
+        sec = "0"
     return float(deg) + (float(min) / 60) + (float(sec) / 3600)
