@@ -24,7 +24,7 @@ jobs:
   test-python:
     strategy:
       matrix:
-        python: ['3.8', '3.9', '3.10', '3.11']
+        python: ['3.9', '3.10', '3.11', '3.12', '3.13']
     name: Test
     runs-on: ubuntu-latest
     steps:
@@ -44,10 +44,10 @@ jobs:
         run: uv python install ${{ matrix.python }}
 
       - name: Install Python dependencies
-        run: uv sync --python ${{ matrix.python }}
+        run: uv sync
 
       - id: run
-        name: Run
+        name: Run tests
         run: uv run python test.py
 
   test-build:
