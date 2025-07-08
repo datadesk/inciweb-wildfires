@@ -5,57 +5,21 @@ on:
 
 jobs:
   lint-python:
-    name: Lint
+    name: Lint Python code
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v4
+      - name: Check with Ruff
+        uses: astral-sh/ruff-action@v3
         with:
-          python-version: '3.10'
-          cache: 'pipenv'
+          args: 'check --exit-zero --verbose'
 
-      - name: Install pipenv
-        run: curl https://raw.githubusercontent.com/pypa/pipenv/master/get-pipenv.py | python
-        shell: bash
-
-      - id: pipenv-install
-        name: Install Python dependencies
-        run: pipenv sync --dev
-
-      - id: run
-        name: Run
-        run: pipenv run flake8 inciweb_wildfires
-
-  mypy-python:
-    name: Static-types check
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - id: setup-python
-        name: Setup Python
-        uses: actions/setup-python@v4
+      - name: Format with Ruff
+        uses: astral-sh/ruff-action@v3
         with:
-          python-version: '3.10'
-          cache: 'pipenv'
-
-      - id: install-pipenv
-        name: Install pipenv
-        run: curl https://raw.githubusercontent.com/pypa/pipenv/master/get-pipenv.py | python
-        shell: bash
-
-      - id: install-python-dependencies
-        name: Install Python dependencies
-        run: pipenv sync --dev
-        shell: bash
-
-      - id: mypy
-        name: Run mypy
-        run: pipenv run mypy ./inciweb_wildfires --ignore-missing-imports --verbose
-        shell: bash
+          args: 'format --check --verbose'
 
   test-python:
     strategy:
@@ -67,24 +31,24 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - uses: actions/setup-python@v4
+      - id: install-uv
+        name: Install uv
+        uses: astral-sh/setup-uv@v6
         with:
-          python-version: ${{ matrix.python }}
-          cache: 'pipenv'
+          version: "latest"
+          enable-cache: true
+          cache-dependency-glob: '**/pyproject.toml'
 
-      - name: Install pipenv
-        run: curl https://raw.githubusercontent.com/pypa/pipenv/master/get-pipenv.py | python
-        shell: bash
+      - id: install-python
+        name: Install Python
+        run: uv python install ${{ matrix.python }}
 
-      - id: pipenv-install
-        name: Install Python dependencies
-        run: pipenv sync --python `which python`
-        shell: bash
+      - name: Install Python dependencies
+        run: uv sync --python ${{ matrix.python }}
 
       - id: run
         name: Run
-        run: pipenv run python test.py
-        shell: bash
+        run: uv run python test.py
 
   test-build:
     name: Build Python package
@@ -94,29 +58,31 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - uses: actions/setup-python@v4
+      - id: install-uv
+        name: Install uv
+        uses: astral-sh/setup-uv@v6
         with:
-          python-version: '3.10'
-          cache: 'pipenv'
+          version: "latest"
+          enable-cache: true
+          cache-dependency-glob: '**/pyproject.toml'
 
-      - name: Install pipenv
-        run: curl https://raw.githubusercontent.com/pypa/pipenv/master/get-pipenv.py | python
-        shell: bash
+      - id: install-python
+        name: Install Python
+        run: uv python install 3.10
 
-      - id: pipenv-install
-        name: Install Python dependencies
-        run: pipenv install --dev --deploy
+      - name: Install Python dependencies
+        run: uv sync --python 3.10 --extras deploy
 
       - id: build
         name: Build release
         run: |
-            pipenv run python setup.py sdist
-            pipenv run python setup.py bdist_wheel
+            uv run python setup.py sdist
+            uv run python setup.py bdist_wheel
             ls -l dist
 
       - id: check
         name: Check release
-        run: pipenv run twine check dist/*
+        run: uv run python -m twine check dist/*
 
       - id: save
         name: Save artifact

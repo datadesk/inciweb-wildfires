@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=45", "setuptools_scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "inciweb-wildfires"
+description = "Download wildfire incidents data from InciWeb"
+readme = "README.md"
+authors = [
+    {name = "Ben Welsh", email = "b@palewi.re"},
+]
+license = "MIT"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+]
+requires-python = ">=3.7"
+dependencies = ["requests", "geojson", "click"]
+dynamic = ["version"]
+
+[project.scripts]
+inciwebwildfires = "inciweb_wildfires.cli:cmd"
+inciweb-wildfires = "inciweb_wildfires.cli:cmd"
+
+[project.urls]
+Source = "https://github.com/datadesk/inciweb-wildfires"
+Tracker = "https://github.com/datadesk/inciweb-wildfires/issues"
+
+[tool.setuptools]
+packages = ["inciweb_wildfires"]
+
+[tool.setuptools_scm]
+
+[project.optional-dependencies]
+deploy = [
+    "twine",
+    "wheel",
+]
