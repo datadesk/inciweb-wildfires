@@ -29,9 +29,7 @@ jobs:
         run: uv sync
 
       - name: Run scrape command
-        run: |
-          uv run python setup.py install
-          uv run inciweb-wildfires incidents > data/incidents.json
+        run: uv run inciweb-wildfires incidents > data/incidents.json
         shell: bash
 
       - name: Datestamp
