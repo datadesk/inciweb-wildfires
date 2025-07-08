@@ -71,14 +71,11 @@ jobs:
         run: uv python install 3.10
 
       - name: Install Python dependencies
-        run: uv sync --extras deploy
+        run: uv sync --extra deploy
 
       - id: build
         name: Build release
-        run: |
-            uv run python setup.py sdist
-            uv run python setup.py bdist_wheel
-            ls -l dist
+        run: uv build --sdist --wheel
 
       - id: check
         name: Check release
