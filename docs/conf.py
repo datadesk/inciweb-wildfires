@@ -1,4 +1,5 @@
 """Configuration file for the Sphinx documentation builder."""
+
 from datetime import datetime
 from typing import Any
 
