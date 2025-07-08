@@ -43,3 +43,10 @@ deploy = [
     "twine",
     "wheel",
 ]
+
+docs = [
+    "sphinx",
+    "sphinx-autobuild",
+    "sphinx-palewire-theme",
+    "myst-parser",
+]

@@ -13,19 +13,25 @@ jobs:
         name: Checkout
         uses: actions/checkout@v3
 
-      - uses: actions/setup-python@v4
+      - id: install-uv
+        name: Install uv
+        uses: astral-sh/setup-uv@v6
         with:
-          python-version: '3.10'
-          cache: 'pipenv'
+          version: "latest"
+          enable-cache: true
+          cache-dependency-glob: '**/pyproject.toml'
 
-      - name: Install pipenv
-        run: curl https://raw.githubusercontent.com/pypa/pipenv/master/get-pipenv.py | python
-        shell: bash
+      - id: install-python
+        name: Install Python
+        run: uv python install 3.10
+
+      - name: Install Python dependencies
+        run: uv sync --python 3.10
 
       - name: Run scrape command
         run: |
-          pipenv run python setup.py install
-          pipenv run inciweb-wildfires incidents > data/incidents.json
+          uv run python setup.py install
+          uv run inciweb-wildfires incidents > data/incidents.json
         shell: bash
 
       - name: Datestamp
