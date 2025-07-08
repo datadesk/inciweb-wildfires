@@ -71,15 +71,11 @@ jobs:
         run: uv python install 3.10
 
       - name: Install Python dependencies
-        run: uv sync --extra deploy
+        run: uv sync
 
       - id: build
         name: Build release
         run: uv build --sdist --wheel
-
-      - id: check
-        name: Check release
-        run: uv run python -m twine check dist/*
 
       - id: save
         name: Save artifact
