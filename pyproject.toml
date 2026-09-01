@@ -23,7 +23,12 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
 ]
 requires-python = ">=3.7"
-dependencies = ["requests", "geojson", "click"]
+dependencies = [
+    "requests",
+    "geojson",
+    "click",
+    "httpx",
+]
 dynamic = ["version"]
 
 [project.scripts]
@@ -40,6 +45,12 @@ packages = ["inciweb_wildfires"]
 [tool.setuptools_scm]
 
 [project.optional-dependencies]
+test = [
+    "pytest",
+    "pytest-asyncio",
+    "respx",
+]
+
 deploy = [
     "twine",
     "wheel",
@@ -64,3 +75,10 @@ ignore = ["E501", "F403",]
 
 [tool.flake8]
 max-line-length = 119
+
+[dependency-groups]
+dev = [
+    "pytest>=7.4.4",
+    "pytest-asyncio>=0.21.2",
+    "respx>=0.21.1",
+]

@@ -48,7 +48,7 @@ jobs:
 
       - id: run
         name: Run tests
-        run: uv run python test.py
+        run: uv run pytest
 
   test-build:
     name: Build Python package
