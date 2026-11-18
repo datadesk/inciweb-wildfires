@@ -1,3 +1,4 @@
+.PHONY: help install lint fix type-check test test-live check build docs clean
 .DEFAULT_GOAL := help
 
 help: ## Show available commands
