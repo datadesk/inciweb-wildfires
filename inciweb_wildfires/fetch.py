@@ -6,6 +6,7 @@ import json
 import random
 import sys
 import time
+from typing import Protocol
 
 import requests
 
@@ -24,10 +25,52 @@ RETRY_STATUS_CODES = frozenset({408, 429})
 """Statuses worth another try. Every 5xx status is also worth another try."""
 
 
+class Reply(Protocol):
+    """What a request function must hand back: a status code and the bytes.
+
+    A ``requests.Response`` fits this.
+    """
+
+    @property
+    def status_code(self) -> int:
+        """The web status, such as 200 or 404."""
+        ...
+
+    @property
+    def content(self) -> bytes:
+        """The body of the reply, as bytes."""
+        ...
+
+
+class Fetcher(Protocol):
+    """A function that makes a web request for this package.
+
+    Pass one as ``get`` to add retries, logging or custom headers. ``requests.get``
+    fits this, and is the default.
+
+    Examples:
+        >>> import requests
+        >>> fetcher: Fetcher = requests.get
+    """
+
+    def __call__(self, url: str, *, timeout: float) -> Reply:
+        """Request a web address.
+
+        Args:
+            url: The address to request.
+            timeout: The seconds to wait before giving up.
+
+        Returns:
+            The reply.
+        """
+        ...
+
+
 def download_rows(
     verbose: bool = False,
     timeout: float = DEFAULT_TIMEOUT,
     tries: int = DEFAULT_TRIES,
+    get: Fetcher | None = None,
 ) -> list[dict[str, str]]:
     """Download every incident entry on InciWeb's map.
 
@@ -40,6 +83,11 @@ def download_rows(
         verbose: Print each request to standard error. Defaults to False.
         timeout: Seconds to wait for InciWeb on each try. Defaults to 60.
         tries: How many tries to make in all. Defaults to 4.
+        get: A function that makes the web request, such as ``requests.get``
+            (the default). It is called as ``get(url, timeout=seconds)`` and
+            must return something with ``status_code`` and ``content``. Its
+            ``requests`` errors are retried like the default's. Any other error
+            it raises is passed on untouched.
 
     Returns:
         One dictionary for each entry, exactly as InciWeb sends it. Every value
@@ -53,7 +101,9 @@ def download_rows(
     Examples:
         >>> rows = download_rows()  # doctest: +SKIP
         >>> rows = download_rows(timeout=120, tries=2)  # doctest: +SKIP
+        >>> rows = download_rows(get=my_get)  # doctest: +SKIP
     """
+    fetch: Fetcher = get or requests.get
     problem = None
     for attempt in range(max(tries, 1)):
         if attempt:
@@ -61,7 +111,7 @@ def download_rows(
         if verbose:
             print(f"Requesting {URL}", file=sys.stderr)
         try:
-            response = requests.get(URL, timeout=timeout)
+            response = fetch(URL, timeout=timeout)
         except (requests.ConnectionError, requests.Timeout) as error:
             problem = InciWebError(
                 f"Could not reach InciWeb at {URL}: {error}", url=URL
