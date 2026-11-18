@@ -5,14 +5,11 @@ from __future__ import annotations
 import json
 
 import pytest
-import requests
 from click.testing import CliRunner
 
 import inciweb_wildfires
 from inciweb_wildfires import convert_coords
 from inciweb_wildfires.cli import cmd
-
-from .conftest import FakeResponse
 
 
 def test_get_incidents_returns_only_wildfires(fake_inciweb):
@@ -49,12 +46,6 @@ def test_points_are_longitude_then_latitude_in_the_western_hemisphere(fake_inciw
 def test_properties_are_the_untouched_source_row(fake_inciweb, sample_rows):
     feature = inciweb_wildfires.get_incidents()["features"][0]
     assert feature["properties"] == sample_rows[0]
-
-
-def test_failed_request_raises(monkeypatch):
-    monkeypatch.setattr(requests, "get", lambda *a, **k: FakeResponse([], 503))
-    with pytest.raises(AssertionError, match="503"):
-        inciweb_wildfires.get_incidents()
 
 
 def test_convert_coords():

@@ -5,11 +5,14 @@ from __future__ import annotations
 from geojson import Feature, FeatureCollection, Point
 
 from .coords import convert_coords, to_point
-from .fetch import download_rows
+from .errors import InciWebDataError, InciWebError
+from .fetch import DEFAULT_TIMEOUT, download_rows
 from .records import Incident
 
 __all__ = [
     "Incident",
+    "InciWebDataError",
+    "InciWebError",
     "convert_coords",
     "get_data",
     "get_incident_records",
@@ -18,7 +21,9 @@ __all__ = [
 ]
 
 
-def get_data(t) -> FeatureCollection:
+def get_data(
+    t, verbose: bool = False, timeout: float = DEFAULT_TIMEOUT
+) -> FeatureCollection:
     """
     Get all incidents data from InciWeb.
 
@@ -27,15 +32,23 @@ def get_data(t) -> FeatureCollection:
 
     Args:
         t: The type of incident to keep, either "Wildfire" or "Prescribed Fire".
+        verbose: Print each request to standard error. Defaults to False.
+        timeout: Seconds to wait for InciWeb on each try. Defaults to 60.
 
     Returns:
         A GeoJSON FeatureCollection with one point for each incident of that
         type. The properties are InciWeb's own fields, as text.
 
+    Raises:
+        InciWebError: If InciWeb cannot be reached after several tries, or
+            answers with an error.
+        InciWebDataError: If an entry is missing a field or has a coordinate
+            that cannot be read. This is also a ``ValueError``.
+
     Examples:
         >>> data = get_data("Wildfire")  # doctest: +SKIP
     """
-    data = download_rows()
+    data = download_rows(verbose=verbose, timeout=timeout)
 
     # Loop through all the placemarks
     feature_list = []
@@ -43,7 +56,12 @@ def get_data(t) -> FeatureCollection:
         # Only type specified
         if d["type"] == t:
             # Reformat as GeoJSON
-            p = Point(to_point(d))
+            try:
+                p = Point(to_point(d))
+            except (KeyError, ValueError) as error:
+                raise InciWebDataError(
+                    f"Could not read the location of an incident: {error!r}"
+                ) from error
             f = Feature(geometry=p, properties=d)
             # Add it to the list
             feature_list.append(f)
@@ -51,31 +69,53 @@ def get_data(t) -> FeatureCollection:
     return FeatureCollection(feature_list)
 
 
-def get_incidents() -> FeatureCollection:
+def get_incidents(
+    verbose: bool = False, timeout: float = DEFAULT_TIMEOUT
+) -> FeatureCollection:
     """Get all active wildfire incidents from InciWeb.
+
+    Args:
+        verbose: Print each request to standard error. Defaults to False.
+        timeout: Seconds to wait for InciWeb on each try. Defaults to 60.
 
     Returns:
         A GeoJSON FeatureCollection with one point for each wildfire.
 
+    Raises:
+        InciWebError: If InciWeb cannot be reached after several tries, or
+            answers with an error.
+
     Examples:
         >>> data = get_incidents()  # doctest: +SKIP
     """
-    return get_data("Wildfire")
+    return get_data("Wildfire", verbose=verbose, timeout=timeout)
 
 
-def get_prescribed_fires() -> FeatureCollection:
+def get_prescribed_fires(
+    verbose: bool = False, timeout: float = DEFAULT_TIMEOUT
+) -> FeatureCollection:
     """Get all active prescribed fire incidents from InciWeb.
+
+    Args:
+        verbose: Print each request to standard error. Defaults to False.
+        timeout: Seconds to wait for InciWeb on each try. Defaults to 60.
 
     Returns:
         A GeoJSON FeatureCollection with one point for each prescribed fire.
 
+    Raises:
+        InciWebError: If InciWeb cannot be reached after several tries, or
+            answers with an error.
+
     Examples:
         >>> data = get_prescribed_fires()  # doctest: +SKIP
     """
-    return get_data("Prescribed Fire")
+    return get_data("Prescribed Fire", verbose=verbose, timeout=timeout)
 
 
-def get_incident_records(t: str | None = None) -> list[Incident]:
+def get_incident_records(
+    t: str | None = None, verbose: bool = False, timeout: float = DEFAULT_TIMEOUT
+) -> list[Incident]:
     """Get incidents from InciWeb as typed records instead of GeoJSON.
 
     Each record has its numbers and dates already parsed. See ``Incident`` for
@@ -84,20 +124,25 @@ def get_incident_records(t: str | None = None) -> list[Incident]:
     Args:
         t: The type of incident to keep, either "Wildfire" or "Prescribed Fire".
             Defaults to None, which keeps every type.
+        verbose: Print each request to standard error. Defaults to False.
+        timeout: Seconds to wait for InciWeb on each try. Defaults to 60.
 
     Returns:
         A list of ``Incident`` records.
 
     Raises:
-        AssertionError: If InciWeb answers with an error status.
-        KeyError: If an entry is missing a field.
-        ValueError: If a number or time in an entry cannot be read.
+        InciWebError: If InciWeb cannot be reached after several tries, or
+            answers with an error.
+        InciWebDataError: If an entry is missing a field or has a number or
+            time that cannot be read. This is also a ``ValueError``.
 
     Examples:
         >>> records = get_incident_records("Wildfire")  # doctest: +SKIP
         >>> for incident in records:  # doctest: +SKIP
         ...     print(incident.title, incident.size, incident.percent_contained)
     """
-    return [
-        Incident.from_row(r) for r in download_rows() if t is None or r["type"] == t
-    ]
+    rows = download_rows(verbose=verbose, timeout=timeout)
+    try:
+        return [Incident.from_row(r) for r in rows if t is None or r["type"] == t]
+    except (KeyError, ValueError) as error:
+        raise InciWebDataError(f"Could not read an incident: {error!r}") from error
