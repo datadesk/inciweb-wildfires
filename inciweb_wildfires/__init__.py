@@ -6,13 +6,15 @@ from geojson import Feature, FeatureCollection, Point
 
 from .coords import convert_coords, to_point
 from .errors import InciWebDataError, InciWebError
-from .fetch import DEFAULT_TIMEOUT, download_rows
+from .fetch import DEFAULT_TIMEOUT, Fetcher, Reply, download_rows
 from .records import Incident
 
 __all__ = [
+    "Fetcher",
     "Incident",
     "InciWebDataError",
     "InciWebError",
+    "Reply",
     "convert_coords",
     "get_data",
     "get_incident_records",
@@ -22,7 +24,11 @@ __all__ = [
 
 
 def get_data(
-    t, verbose: bool = False, timeout: float = DEFAULT_TIMEOUT
+    t,
+    verbose: bool = False,
+    timeout: float = DEFAULT_TIMEOUT,
+    *,
+    get: Fetcher | None = None,
 ) -> FeatureCollection:
     """
     Get all incidents data from InciWeb.
@@ -34,6 +40,9 @@ def get_data(
         t: The type of incident to keep, either "Wildfire" or "Prescribed Fire".
         verbose: Print each request to standard error. Defaults to False.
         timeout: Seconds to wait for InciWeb on each try. Defaults to 60.
+        get: A function that makes the web request, such as ``requests.get``
+            (the default). Pass your own to add retries, logging or custom
+            headers. It is called as ``get(url, timeout=seconds)``.
 
     Returns:
         A GeoJSON FeatureCollection with one point for each incident of that
@@ -48,7 +57,7 @@ def get_data(
     Examples:
         >>> data = get_data("Wildfire")  # doctest: +SKIP
     """
-    data = download_rows(verbose=verbose, timeout=timeout)
+    data = download_rows(verbose=verbose, timeout=timeout, get=get)
 
     # Loop through all the placemarks
     feature_list = []
@@ -70,13 +79,19 @@ def get_data(
 
 
 def get_incidents(
-    verbose: bool = False, timeout: float = DEFAULT_TIMEOUT
+    verbose: bool = False,
+    timeout: float = DEFAULT_TIMEOUT,
+    *,
+    get: Fetcher | None = None,
 ) -> FeatureCollection:
     """Get all active wildfire incidents from InciWeb.
 
     Args:
         verbose: Print each request to standard error. Defaults to False.
         timeout: Seconds to wait for InciWeb on each try. Defaults to 60.
+        get: A function that makes the web request, such as ``requests.get``
+            (the default). Pass your own to add retries, logging or custom
+            headers. It is called as ``get(url, timeout=seconds)``.
 
     Returns:
         A GeoJSON FeatureCollection with one point for each wildfire.
@@ -88,17 +103,23 @@ def get_incidents(
     Examples:
         >>> data = get_incidents()  # doctest: +SKIP
     """
-    return get_data("Wildfire", verbose=verbose, timeout=timeout)
+    return get_data("Wildfire", verbose=verbose, timeout=timeout, get=get)
 
 
 def get_prescribed_fires(
-    verbose: bool = False, timeout: float = DEFAULT_TIMEOUT
+    verbose: bool = False,
+    timeout: float = DEFAULT_TIMEOUT,
+    *,
+    get: Fetcher | None = None,
 ) -> FeatureCollection:
     """Get all active prescribed fire incidents from InciWeb.
 
     Args:
         verbose: Print each request to standard error. Defaults to False.
         timeout: Seconds to wait for InciWeb on each try. Defaults to 60.
+        get: A function that makes the web request, such as ``requests.get``
+            (the default). Pass your own to add retries, logging or custom
+            headers. It is called as ``get(url, timeout=seconds)``.
 
     Returns:
         A GeoJSON FeatureCollection with one point for each prescribed fire.
@@ -110,11 +131,15 @@ def get_prescribed_fires(
     Examples:
         >>> data = get_prescribed_fires()  # doctest: +SKIP
     """
-    return get_data("Prescribed Fire", verbose=verbose, timeout=timeout)
+    return get_data("Prescribed Fire", verbose=verbose, timeout=timeout, get=get)
 
 
 def get_incident_records(
-    t: str | None = None, verbose: bool = False, timeout: float = DEFAULT_TIMEOUT
+    t: str | None = None,
+    verbose: bool = False,
+    timeout: float = DEFAULT_TIMEOUT,
+    *,
+    get: Fetcher | None = None,
 ) -> list[Incident]:
     """Get incidents from InciWeb as typed records instead of GeoJSON.
 
@@ -126,6 +151,9 @@ def get_incident_records(
             Defaults to None, which keeps every type.
         verbose: Print each request to standard error. Defaults to False.
         timeout: Seconds to wait for InciWeb on each try. Defaults to 60.
+        get: A function that makes the web request, such as ``requests.get``
+            (the default). Pass your own to add retries, logging or custom
+            headers. It is called as ``get(url, timeout=seconds)``.
 
     Returns:
         A list of ``Incident`` records.
@@ -141,7 +169,7 @@ def get_incident_records(
         >>> for incident in records:  # doctest: +SKIP
         ...     print(incident.title, incident.size, incident.percent_contained)
     """
-    rows = download_rows(verbose=verbose, timeout=timeout)
+    rows = download_rows(verbose=verbose, timeout=timeout, get=get)
     try:
         return [Incident.from_row(r) for r in rows if t is None or r["type"] == t]
     except (KeyError, ValueError) as error:
