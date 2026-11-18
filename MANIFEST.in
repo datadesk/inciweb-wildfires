@@ -1,2 +1,13 @@
 include LICENSE
 include README.md
+include CODE_OF_CONDUCT.md
+include .pre-commit-config.yaml
+include .python-version
+include uv.lock
+include Makefile
+include inciweb_wildfires/py.typed
+recursive-include docs *.md *.py Makefile
+recursive-include tests *.py
+recursive-include tests *.json
+prune data
+prune docs/_build
