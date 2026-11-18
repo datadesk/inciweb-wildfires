@@ -1,29 +1,35 @@
 [build-system]
-requires = ["setuptools>=45", "setuptools_scm[toml]>=6.2"]
+requires = ["setuptools>=77", "setuptools_scm>=8"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "inciweb-wildfires"
 description = "Download wildfire incidents data from InciWeb"
+keywords = ["wildfires", "inciweb", "geojson", "data"]
 readme = "README.md"
 authors = [
     {name = "Ben Welsh", email = "b@palewi.re"},
 ]
 license = "MIT"
+license-files = ["LICENSE"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Operating System :: OS Independent",
     "Intended Audience :: Developers",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
 ]
-requires-python = ">=3.7"
-dependencies = ["requests", "geojson", "click"]
+requires-python = ">=3.11"
+dependencies = [
+    "click",
+    "geojson",
+    "requests",
+]
 dynamic = ["version"]
 
 [project.scripts]
@@ -31,36 +37,50 @@ inciwebwildfires = "inciweb_wildfires.cli:cmd"
 inciweb-wildfires = "inciweb_wildfires.cli:cmd"
 
 [project.urls]
+Documentation = "https://palewi.re/docs/inciweb-wildfires/"
 Source = "https://github.com/datadesk/inciweb-wildfires"
-Tracker = "https://github.com/datadesk/inciweb-wildfires/issues"
+Issues = "https://github.com/datadesk/inciweb-wildfires/issues"
+
+[dependency-groups]
+dev = [
+    "pre-commit",
+    "ruff",
+    "setuptools-scm",
+    "twine",
+    "ty",
+]
+test = [
+    "pytest",
+]
+docs = [
+    "myst-parser",
+    "sphinx",
+    "sphinx-autobuild",
+    "sphinx-palewire-theme",
+]
 
 [tool.setuptools]
 packages = ["inciweb_wildfires"]
 
 [tool.setuptools_scm]
 
-[project.optional-dependencies]
-deploy = [
-    "twine",
-    "wheel",
-    "pre-commit",
-]
-
-docs = [
-    "sphinx",
-    "sphinx-autobuild",
-    "sphinx-palewire-theme",
-    "myst-parser",
-]
-
 [tool.ruff]
-exclude = [
-    "docs",
-]
+target-version = "py311"
+exclude = ["docs"]
 
 [tool.ruff.lint]
-select = ["E", "F", "B", "W",]
-ignore = ["E501", "F403",]
+select = ["E", "F", "B", "W", "I", "UP"]
+ignore = ["E501"]
 
-[tool.flake8]
-max-line-length = 119
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = ["--strict-markers", "-m", "not live"]
+markers = [
+    "live: talks to the real InciWeb website, so it can be slow or fail when InciWeb is down",
+]
+
+[tool.ty.environment]
+python-version = "3.11"
+
+[tool.ty.src]
+include = ["inciweb_wildfires"]

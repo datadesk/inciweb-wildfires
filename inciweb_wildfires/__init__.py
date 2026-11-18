@@ -20,9 +20,7 @@ def get_data(t) -> FeatureCollection:
     r = requests.get(url)
 
     # Make sure it came back kosher
-    try:
-        assert r.ok
-    except AssertionError:
+    if not r.ok:
         raise AssertionError(f"Request failed with status code {r.status_code}")
 
     # Get the JSON data

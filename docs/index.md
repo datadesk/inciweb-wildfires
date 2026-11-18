@@ -10,7 +10,7 @@ Download wildfire incidents data from [InciWeb](https://inciweb.nwcg.gov/).
 ## Installation
 
 ```sh
-pipenv install inciweb-wildfires
+uv add inciweb-wildfires
 ```
 
 ## Command-line usage
@@ -37,7 +37,7 @@ inciwebwildfires incidents
 
 Download prescribed fire incidents from inciweb.
 ```sh
-inciwebwildfires prescribed_fires
+inciwebwildfires prescribed-fires
 ```
 
 
@@ -60,21 +60,13 @@ data = inciweb_wildfires.get_incidents()
 Install dependencies for development.
 
 ```sh
-pipenv install --dev
+make install
 ```
 
 Run tests.
 
 ```sh
-pipenv run python test.py
-```
-
-## Developing the CLI
-
-The command-line interface is implemented using Click and setuptools. To install it locally for development inside your virtual environment, run the following installation command, as [prescribed by the Click documentation](https://click.palletsprojects.com/en/7.x/setuptools/#setuptools-integration).
-
-```sh
-pipenv run pip install --editable .
+make check
 ```
 
 ## Links
