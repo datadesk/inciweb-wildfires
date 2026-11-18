@@ -1,54 +1,104 @@
 name: Testing and deployment
 on:
   push:
+  pull_request:
   workflow_dispatch:
 
 jobs:
   lint-python:
-    name: Lint Python code
+    name: Lint
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: 'uv.lock'
+
+      - name: Install Python dependencies
+        run: uv sync --group dev
 
       - name: Check with Ruff
-        uses: astral-sh/ruff-action@v3
-        with:
-          args: 'check --exit-zero --verbose'
+        run: uv run ruff check
 
-      - name: Format with Ruff
-        uses: astral-sh/ruff-action@v3
+      - name: Check formatting with Ruff
+        run: uv run ruff format --check
+
+  type-check-python:
+    name: Type check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
-          args: 'format --check --verbose'
+          fetch-depth: 1
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: 'uv.lock'
+
+      - name: Install Python dependencies
+        run: uv sync --group dev
+
+      - name: Check types with ty
+        run: uv run ty check
 
   test-python:
     strategy:
       matrix:
-        python: ['3.9', '3.10', '3.11', '3.12', '3.13']
+        python: ['3.11', '3.12', '3.13', '3.14']
     name: Test
     runs-on: ubuntu-latest
+    needs: [lint-python, type-check-python]
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
 
-      - id: install-uv
-        name: Install uv
+      - name: Install uv
         uses: astral-sh/setup-uv@v6
         with:
-          version: "latest"
           enable-cache: true
-          cache-dependency-glob: '**/pyproject.toml'
+          cache-dependency-glob: 'uv.lock'
 
-      - id: install-python
-        name: Install Python
+      - name: Install Python
         run: uv python install ${{ matrix.python }}
 
       - name: Install Python dependencies
-        run: uv sync
+        run: uv sync --group test --python ${{ matrix.python }}
 
-      - id: run
-        name: Run tests
-        run: uv run python test.py
+      - name: Run offline tests
+        run: uv run pytest
+
+  test-live:
+    name: Test against InciWeb's real website
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+          cache-dependency-glob: 'uv.lock'
+
+      - name: Install Python dependencies
+        run: uv sync --group test
+
+      - name: Run live tests
+        run: uv run pytest -m live
 
   test-build:
     name: Build Python package
@@ -57,31 +107,33 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
 
-      - id: install-uv
-        name: Install uv
+      - name: Install uv
         uses: astral-sh/setup-uv@v6
         with:
-          version: "latest"
           enable-cache: true
-          cache-dependency-glob: '**/pyproject.toml'
-
-      - id: install-python
-        name: Install Python
-        run: uv python install 3.10
+          cache-dependency-glob: 'uv.lock'
 
       - name: Install Python dependencies
-        run: uv sync
+        run: uv sync --group dev
 
       - id: build
         name: Build release
-        run: uv build --sdist --wheel
+        run: |
+          uv build --sdist --wheel
+          ls -l dist
+
+      - id: check
+        name: Check release
+        run: uv run twine check dist/*
 
       - id: save
         name: Save artifact
         uses: actions/upload-artifact@v4
         with:
-          name: release-candidate
+          name: test-release-${{ github.run_number }}
           path: ./dist
           if-no-files-found: error
 
@@ -95,7 +147,7 @@ jobs:
         name: Fetch artifact
         uses: actions/download-artifact@v4
         with:
-          name: release-candidate
+          name: test-release-${{ github.run_number }}
           path: ./dist
 
       - id: publish

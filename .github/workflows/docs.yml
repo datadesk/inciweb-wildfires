@@ -2,6 +2,7 @@ name: Documentation
 
 on:
   push:
+  pull_request:
   workflow_dispatch:
 
 concurrency:
@@ -16,21 +17,19 @@ jobs:
       - id: checkout
         name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
 
       - id: install-uv
         name: Install uv
         uses: astral-sh/setup-uv@v6
         with:
-          version: "latest"
           enable-cache: true
-          cache-dependency-glob: '**/pyproject.toml'
+          cache-dependency-glob: 'uv.lock'
 
-      - id: install-python
-        name: Install Python
-        run: uv python install 3.10
 
       - name: Install Python dependencies
-        run: uv sync --extra docs
+        run: uv sync --group docs
 
       - id: build-sphinx-documentation
         name: Build Sphinx documentation
