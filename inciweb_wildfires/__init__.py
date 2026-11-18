@@ -2,8 +2,20 @@
 
 from __future__ import annotations
 
-import requests
 from geojson import Feature, FeatureCollection, Point
+
+from .coords import convert_coords, to_point
+from .fetch import download_rows
+from .records import Incident
+
+__all__ = [
+    "Incident",
+    "convert_coords",
+    "get_data",
+    "get_incident_records",
+    "get_incidents",
+    "get_prescribed_fires",
+]
 
 
 def get_data(t) -> FeatureCollection:
@@ -13,18 +25,17 @@ def get_data(t) -> FeatureCollection:
     Passes in 't' parameter used to specify type of data (Wildfire, Prescribed Fire)
     Incident Types
 
-    Returns GeoJson FeatureCollection.
+    Args:
+        t: The type of incident to keep, either "Wildfire" or "Prescribed Fire".
+
+    Returns:
+        A GeoJSON FeatureCollection with one point for each incident of that
+        type. The properties are InciWeb's own fields, as text.
+
+    Examples:
+        >>> data = get_data("Wildfire")  # doctest: +SKIP
     """
-    # Get the URL
-    url = "https://inciweb.wildfire.gov/api/map_data"
-    r = requests.get(url)
-
-    # Make sure it came back kosher
-    if not r.ok:
-        raise AssertionError(f"Request failed with status code {r.status_code}")
-
-    # Get the JSON data
-    data = r.json()
+    data = download_rows()
 
     # Loop through all the placemarks
     feature_list = []
@@ -32,48 +43,61 @@ def get_data(t) -> FeatureCollection:
         # Only type specified
         if d["type"] == t:
             # Reformat as GeoJSON
-            x = convert_coords(d["long_deg"], d["long_min"], d["long_sec"])
-            y = convert_coords(d["lat_deg"], d["lat_min"], d["lat_sec"])
-            if x > 0:
-                x = -x
-            p = Point((x, y))
+            p = Point(to_point(d))
             f = Feature(geometry=p, properties=d)
             # Add it to the list
             feature_list.append(f)
-        else:
-            continue
     # Pass it out
     return FeatureCollection(feature_list)
 
 
 def get_incidents() -> FeatureCollection:
-    """
-    Get all active wildfire incidents from InciWeb.
-    Returns GeoJson FeatureCollection.
-    """
-    features = get_data("Wildfire")
+    """Get all active wildfire incidents from InciWeb.
 
-    # Pass it out
-    return features
+    Returns:
+        A GeoJSON FeatureCollection with one point for each wildfire.
+
+    Examples:
+        >>> data = get_incidents()  # doctest: +SKIP
+    """
+    return get_data("Wildfire")
 
 
 def get_prescribed_fires() -> FeatureCollection:
+    """Get all active prescribed fire incidents from InciWeb.
+
+    Returns:
+        A GeoJSON FeatureCollection with one point for each prescribed fire.
+
+    Examples:
+        >>> data = get_prescribed_fires()  # doctest: +SKIP
     """
-    Get all active prescribed fire incidents from InciWeb.
-    Returns GeoJson FeatureCollection.
+    return get_data("Prescribed Fire")
+
+
+def get_incident_records(t: str | None = None) -> list[Incident]:
+    """Get incidents from InciWeb as typed records instead of GeoJSON.
+
+    Each record has its numbers and dates already parsed. See ``Incident`` for
+    every field.
+
+    Args:
+        t: The type of incident to keep, either "Wildfire" or "Prescribed Fire".
+            Defaults to None, which keeps every type.
+
+    Returns:
+        A list of ``Incident`` records.
+
+    Raises:
+        AssertionError: If InciWeb answers with an error status.
+        KeyError: If an entry is missing a field.
+        ValueError: If a number or time in an entry cannot be read.
+
+    Examples:
+        >>> records = get_incident_records("Wildfire")  # doctest: +SKIP
+        >>> for incident in records:  # doctest: +SKIP
+        ...     print(incident.title, incident.size, incident.percent_contained)
     """
-    features = get_data("Prescribed Fire")
-
-    # Pass it out
-    return features
-
-
-def convert_coords(deg: str, min: str, sec: str) -> float:
-    """Handle the flawed coordinates published by InciWeb."""
-    # if there's a degree symbol, remove it
-    deg = deg.replace("º", "")
-    if not min.strip():
-        min = "0"
-    if not sec.strip():
-        sec = "0"
-    return float(deg) + (float(min) / 60) + (float(sec) / 3600)
+    return [
+        Incident.from_row(r) for r in download_rows() if t is None or r["type"] == t
+    ]
