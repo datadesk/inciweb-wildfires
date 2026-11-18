@@ -65,5 +65,10 @@ def prescribed_fires(timeout, verbose):
     click.echo(data)
 
 
+# The old documentation spelled this command with an underscore, which Click
+# 7 and newer no longer accepts on its own. Keep that spelling working.
+cmd.add_command(prescribed_fires, name="prescribed_fires")
+
+
 if __name__ == "__main__":
     cmd()

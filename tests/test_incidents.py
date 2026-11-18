@@ -64,3 +64,9 @@ def test_cli_prescribed_fires(fake_inciweb):
     result = CliRunner().invoke(cmd, ["prescribed-fires"])
     assert result.exit_code == 0
     assert len(json.loads(result.output)["features"]) == 2
+
+
+def test_cli_old_underscore_spelling_still_works(fake_inciweb):
+    result = CliRunner().invoke(cmd, ["prescribed_fires"])
+    assert result.exit_code == 0
+    assert len(json.loads(result.output)["features"]) == 2
