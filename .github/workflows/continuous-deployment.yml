@@ -76,7 +76,12 @@ jobs:
         run: uv sync --group test --python ${{ matrix.python }}
 
       - name: Run offline tests
+        if: matrix.python != '3.14'
         run: uv run pytest
+
+      - name: Run offline tests with coverage, failing under the floor
+        if: matrix.python == '3.14'
+        run: uv run pytest --cov --cov-report=term-missing
 
   test-live:
     name: Test against InciWeb's real website

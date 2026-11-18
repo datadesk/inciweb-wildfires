@@ -5,11 +5,14 @@ from __future__ import annotations
 import json
 
 import pytest
+import requests
 from click.testing import CliRunner
 
 import inciweb_wildfires
 from inciweb_wildfires import convert_coords
 from inciweb_wildfires.cli import cmd
+
+from .conftest import FakeResponse
 
 
 def test_get_incidents_returns_only_wildfires(fake_inciweb):
@@ -70,3 +73,33 @@ def test_cli_old_underscore_spelling_still_works(fake_inciweb):
     result = CliRunner().invoke(cmd, ["prescribed_fires"])
     assert result.exit_code == 0
     assert len(json.loads(result.output)["features"]) == 2
+
+
+def test_longitude_that_is_already_negative_is_kept():
+    from inciweb_wildfires.coords import to_point
+
+    row = {
+        "long_deg": "-105", "long_min": "0", "long_sec": "0",
+        "lat_deg": "40", "lat_min": "0", "lat_sec": "0",
+    }  # fmt: skip
+    assert to_point(row) == (-105.0, 40.0)
+
+
+def test_a_bad_coordinate_in_get_data_is_a_data_error_and_value_error(
+    monkeypatch, sample_rows
+):
+    from inciweb_wildfires import InciWebDataError
+
+    sample_rows[0]["lat_deg"] = "north"
+    monkeypatch.setattr(requests, "get", lambda *a, **k: FakeResponse(sample_rows))
+    with pytest.raises(InciWebDataError, match="location"):
+        inciweb_wildfires.get_incidents()
+
+
+def test_a_missing_coordinate_in_get_data_is_a_data_error(monkeypatch, sample_rows):
+    from inciweb_wildfires import InciWebDataError
+
+    del sample_rows[0]["lat_deg"]
+    monkeypatch.setattr(requests, "get", lambda *a, **k: FakeResponse(sample_rows))
+    with pytest.raises(InciWebDataError):
+        inciweb_wildfires.get_incidents()

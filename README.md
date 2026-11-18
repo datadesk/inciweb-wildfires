@@ -57,7 +57,7 @@ make install
 make check
 ```
 
-The tests run offline against a small saved sample. `make test-live` calls the real InciWeb.
+The tests run offline against a small saved sample. `make check` also measures test coverage and fails if it drops under 95 percent, counting branches as well as lines. `make test-fast` skips the coverage step. `make test-live` calls the real InciWeb.
 
 ## Things to know
 

@@ -170,3 +170,39 @@ def test_cli_error_is_one_plain_line(script):
     assert result.exit_code == 1
     assert result.stderr.startswith("Error: InciWeb sent back status 404")
     assert "Traceback" not in result.stderr
+
+
+@pytest.mark.parametrize("name", ["prescribed-fires", "prescribed_fires"])
+def test_cli_prescribed_fires_error_is_one_plain_line(script, name):
+    script.replies = [FakeResponse([], status_code=404)]
+    result = CliRunner().invoke(cmd, [name])
+    assert result.exit_code == 1
+    assert result.stderr.startswith("Error: InciWeb sent back status 404")
+
+
+@pytest.mark.parametrize("name", ["incidents", "prescribed-fires"])
+def test_cli_rejects_a_timeout_under_one_second(script, name):
+    result = CliRunner().invoke(cmd, [name, "--timeout", "0"])
+    assert result.exit_code == 2
+    assert script.urls == []
+
+
+def test_cli_prescribed_fires_verbose_keeps_stdout_clean_json(script, good):
+    script.replies = [good]
+    result = CliRunner().invoke(cmd, ["prescribed_fires", "--verbose"])
+    assert result.exit_code == 0
+    assert fetch.URL in result.stderr
+    assert len(json.loads(result.stdout)["features"]) == 2
+
+
+def test_tries_can_be_limited(script):
+    script.replies = [FakeResponse([], status_code=503)] * 2
+    with pytest.raises(InciWebError):
+        fetch.download_rows(tries=2)
+    assert len(script.urls) == 2
+
+
+def test_an_entry_without_a_type_is_a_data_error(script):
+    script.replies = [FakeResponse([{"title": "no type"}])]
+    with pytest.raises(InciWebDataError, match="list of incidents"):
+        inciweb_wildfires.get_incidents()
