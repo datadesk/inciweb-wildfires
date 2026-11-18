@@ -52,6 +52,7 @@ dev = [
 ]
 test = [
     "pytest",
+    "pytest-cov>=7.1.0",
 ]
 docs = [
     "myst-parser",
@@ -81,6 +82,20 @@ testpaths = ["tests"]
 addopts = ["--strict-markers", "-m", "not live"]
 markers = [
     "live: talks to the real InciWeb website, so it can be slow or fail when InciWeb is down",
+]
+
+[tool.coverage.run]
+source = ["inciweb_wildfires"]
+branch = true
+
+[tool.coverage.report]
+fail_under = 95
+show_missing = true
+exclude_lines = [
+    "pragma: no cover",
+    "if TYPE_CHECKING:",
+    '^\s+\.\.\.$',
+    'if __name__ == "__main__":',
 ]
 
 [tool.ty.environment]
